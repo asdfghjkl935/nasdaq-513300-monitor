@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>纳斯达克ETF华夏 513300 · 双口径折溢价监控</title>
+<style>
+  :root{--bg:#0d1117;--card:#161b22;--line:#232b36;--txt:#e6edf3;--sub:#8b949e;--up:#ff5252;--down:#22c55e;--acc:#3b82f6;--gold:#f0b90b;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;font-size:14px;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto;padding:14px}
+  h1{font-size:17px;margin:4px 0 2px;font-weight:700}
+  .sub{color:var(--sub);font-size:12px}
+  .hero{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center;margin:12px 0}
+  .hero .label{color:var(--sub);font-size:12px}
+  .hero .big{font-size:42px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+  .hero .tag{display:inline-block;margin-top:6px;padding:3px 12px;border-radius:999px;font-size:13px;font-weight:600}
+  .hero .second{margin-top:8px;font-size:13px;color:var(--sub)}
+  .hero .note{margin-top:6px;font-size:12px}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 5px;text-align:center}
+  .card .k{color:var(--sub);font-size:10.5px;margin-bottom:3px}
+  .card .v{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+  .card .d{color:var(--sub);font-size:9.5px;margin-top:2px}
+  .bar{display:flex;justify-content:space-between;align-items:center;color:var(--sub);font-size:12px;margin:10px 0 6px}
+  button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600}
+  button.ghost{background:#21262d}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th,td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:right;font-size:12.5px}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--sub);font-weight:500;font-size:11px}
+  .up{color:var(--up)}.down{color:var(--down)}
+  .sect{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .sect h3{font-size:13px;margin:0 0 8px;color:var(--sub);font-weight:600}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;text-align:center}
+  .stats .s .k{color:var(--sub);font-size:10.5px}
+  .stats .s .v{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+  input{background:#0d1117;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:6px 8px;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .small{font-size:11.5px;color:var(--sub);line-height:1.7}
+  details summary{color:var(--sub);font-size:12px;cursor:pointer}
+  svg{width:100%;height:auto;display:block}
+  .drv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+  .drv .d{background:#0d1117;border-radius:10px;padding:8px 4px}
+  .drv .d .k{color:var(--sub);font-size:10.5px}
+  .drv .d .v{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+  .drv .d .x{font-size:10.5px;color:var(--sub)}
+  .warnbox{background:rgba(240,185,11,.08);border:1px solid rgba(240,185,11,.3);border-radius:10px;padding:10px;font-size:12px;line-height:1.7;color:#f0d98b}
+  .warn{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>纳斯达克ETF华夏 · 513300</h1>
+  <div class="sub">QDII-ETF｜跟踪纳斯达克100（NDX）｜自动锚定最新净值</div>
+
+  <div class="hero">
+    <div class="label">含盘后折溢价（前瞻口径）</div>
+    <div class="big" id="prem">--</div>
+    <div><span class="tag" id="tag">加载中…</span></div>
+    <div class="second" id="second">常规口径：--</div>
+    <div class="note" id="premNote"></div>
+  </div>
+
+  <div class="cards">
+    <div class="card"><div class="k">官方净值</div><div class="v" id="offNav">--</div><div class="d" id="offNavDate"></div></div>
+    <div class="card"><div class="k">常规口径</div><div class="v" id="navA">--</div><div class="d">+11-05跌幅</div></div>
+    <div class="card"><div class="k">含盘后口径</div><div class="v" id="navB">--</div><div class="d">+QQQ盘后</div></div>
+    <div class="card"><div class="k">场内价</div><div class="v" id="mkt">--</div><div class="d" id="fxv"></div></div>
+  </div>
+
+  <div class="bar">
+    <span id="status">加载中…</span>
+    <span><button class="ghost" onclick="refresh()">刷新</button></span>
+  </div>
+  <div class="small" id="times"></div>
+
+  <div class="sect">
+    <h3>驱动指标</h3>
+    <div class="drv">
+      <div class="d"><div class="k">纳指100</div><div class="v" id="dNdx">--</div><div class="x" id="dNdxP"></div></div>
+      <div class="d"><div class="k">QQQ 盘后</div><div class="v" id="dAh">--</div><div class="x" id="dAhP"></div></div>
+      <div class="d"><div class="k">USD/CNY</div><div class="v" id="dFx">--</div><div class="x">未计日间波动</div></div>
+    </div>
+  </div>
+
+  <div class="sect">
+    <h3>折溢价历史曲线（近 160 个交易日）</h3>
+    <svg id="chart" viewBox="0 0 700 190" preserveAspectRatio="none"></svg>
+    <div class="stats">
+      <div class="s"><div class="k">当前</div><div class="v" id="stNow">--</div></div>
+      <div class="s"><div class="k">均值</div><div class="v" id="stAvg">--</div></div>
+      <div class="s"><div class="k">最高</div><div class="v up" id="stMax">--</div></div>
+      <div class="s"><div class="k">最低</div><div class="v down" id="stMin">--</div></div>
+    </div>
+  </div>
+
+  <div class="sect" id="riskBox" style="display:none"></div>
+
+  <div class="sect">
+    <h3>滚动台账（我的买入批次）</h3>
+    <div class="row2">
+      <div><div class="small">买入日期</div><input id="bDate" type="date"></div>
+      <div><div class="small">买入价</div><input id="bPrice" placeholder="如 2.574"></div>
+    </div>
+    <div class="row2" style="margin-top:8px">
+      <div><div class="small">买入时溢价%（可空）</div><input id="bDisc" placeholder="如 12.5"></div>
+      <div style="display:flex;align-items:flex-end"><button style="width:100%" onclick="addBatch()">+ 添加批次</button></div>
+    </div>
+    <div id="ledgerWrap" style="margin-top:10px"></div>
+    <div class="small" style="margin-top:6px">浮动收益按含盘后净值计算；数据仅存本机浏览器。</div>
+  </div>
+
+  <div class="sect">
+    <h3>参数</h3>
+    <div class="row2">
+      <div><div class="small">锚定汇率USD/CNY</div><input id="inFx0" value="6.6723"></div>
+      <div style="display:flex;align-items:flex-end"><button style="width:100%" onclick="applyCfg()">应用汇率</button></div>
+    </div>
+  </div>
+
+  <div class="sect">
+    <details>
+      <summary>方法与局限（点开，建议看）</summary>
+      <div class="small" style="margin-top:8px">
+        <b>自动锚定</b>：净值取天天基金 513300 最新公布值（含日期）。<br>
+        <b>lag 判断</b>：净值日 → 最新美股交易日的交易日数。经实测，513300 净值日与美股同日对齐（净值 11-04 涨 1.00%，纳指100 当日涨 0.97%）。<br>
+        · lag=0：常规口径＝官方净值<br>
+        · lag=1：常规口径＝官方净值×(1+纳指100涨跌)<br>
+        · lag≥2：标注"估算可能偏低"<br>
+        <b>涨跌用纳指100（NDX）</b>，盘后用 QQQ 买一/卖一中间价代理（NDX 指数无盘后报价）。<br>
+        <b>汇率</b>：QDII 净值=美元资产×汇率，页面未计日间汇率波动（通常&lt;0.3%），仅展示参考汇率。<br>
+        <b>QDII 溢价</b>：513300 因外汇额度限制常长期溢价，溢价不是"折价套利"机会，反而意味着买入成本高于净值。<br>
+        本工具仅作个人研究辅助，不构成投资建议。
+      </div>
+    </details>
+  </div>
+</div>
+
+<script>
+const CFG = {
+  officialNav: null, navDate: null,
+  fxAnchor: 6.6723, fxNow: 6.6723,
+  ndxChg: null, qqqAh: null
+};
+const $ = id=>document.getElementById(id);
+let HIST=[], LIVE_PREM=null, NAV_EST=null;
+
+function loadScript(src){
+  return new Promise((res,rej)=>{
+    const s=document.createElement("script"); let done=false;
+    s.src=src; s.onload=()=>{done=true;res();}; s.onerror=()=>{done=true;rej(new Error("fail"));};
+    document.head.appendChild(s); setTimeout(()=>{if(!done)rej(new Error("timeout"));},9000);
+  });
+}
+const arr = sym => { const r=window["v_"+sym]; return r?String(r).split("~"):null; };
+const num = x => { const v=parseFloat(x); return isNaN(v)?null:v; };
+const f2 = x => (x==null||isNaN(x))?"--":x.toFixed(2);
+const f4 = x => (x==null||isNaN(x))?"--":x.toFixed(4);
+const pc = x => (x==null?"--":((x>=0?"+":"")+(x*100).toFixed(2)+"%"));
+
+function sessionsBetween(d1,d2){
+  if(!d1||!d2) return null;
+  let n=0, d=new Date(d1+"T00:00:00Z"); const end=new Date(d2+"T00:00:00Z");
+  if(d>=end) return 0;
+  while(true){ d.setUTCDate(d.getUTCDate()+1); if(d>end) break; const wd=d.getUTCDay(); if(wd!==0&&wd!==6) n++; }
+  return n;
+}
+
+async function loadHistory(){
+  try{
+    await loadScript("https://fund.eastmoney.com/pingzhongdata/513300.js");
+    const nt=window.Data_netWorthTrend||[];
+    if(!nt.length) return false;
+    const nav={};
+    nt.forEach(it=>{ nav[new Date(it.x+8*3600*1000).toISOString().slice(0,10)]=it.y; });
+    const ds=Object.keys(nav).sort();
+    CFG.officialNav=nav[ds[ds.length-1]]; CFG.navDate=ds[ds.length-1];
+    const r=await fetch("https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh513300,day,,,300,qfq");
+    const j=await r.json(); const node=j.data["sh513300"]; const days=node.day||node.qfqday;
+    const price={}; days.forEach(row=>price[row[0]]=parseFloat(row[2]));
+    const dd=Object.keys(price).filter(d=>nav[d]).sort();
+    if(dd.length>10) HIST=dd.slice(-160).map(d=>[d,+((price[d]/nav[d]-1)*100).toFixed(2)]);
+    return true;
+  }catch(e){ console.warn("history",e); return false; }
+}
+
+async function fetchFX(){
+  try{ const r=await fetch("https://open.er-api.com/v6/latest/USD"); const j=await r.json(); return j.rates&&j.rates.CNY; }catch(e){ return null; }
+}
+
+async function refresh(){
+  try{
+    $("status").textContent="刷新中…";
+    await loadScript("https://qt.gtimg.cn/q=sh513300,usNDX,usQQQ&_="+Date.now());
+    const fx=await fetchFX(); if(fx) CFG.fxNow=fx;
+    compute();
+    $("status").textContent="已更新";
+  }catch(e){ $("status").textContent="行情加载失败："+e.message; }
+}
+
+function compute(){
+  const qn=arr("usNDX"), qq=arr("usQQQ"), qm=arr("sh513300");
+  let ndxChg=null, ndxPoint=null, usDate="";
+  if(qn){ ndxPoint=num(qn[3]); const c=num(qn[32]); if(c!=null) ndxChg=c/100; if(qn[30]) usDate=qn[30].slice(0,10); }
+  let qqqAh=null, qqqClose=null;
+  if(qq){ qqqClose=num(qq[3]); const bid=num(qq[9]), ask=num(qq[19]); if(qqqClose&&bid>0&&ask>0) qqqAh=((bid+ask)/2)/qqqClose-1; }
+  CFG.ndxChg=ndxChg; CFG.qqqAh=qqqAh;
+
+  const lag=sessionsBetween(CFG.navDate, usDate);
+  let navA=null, navB=null, stale=false;
+  if(CFG.officialNav!=null && lag!=null && ndxChg!=null){
+    if(lag===0) navA=CFG.officialNav;
+    else navA=CFG.officialNav*(1+ndxChg);
+    if(lag>=2) stale=true;
+    navB=navA*(1+(qqqAh||0));
+  }
+  const mkt=qm?num(qm[3]):null;
+  const premB=(mkt&&navB)?(mkt/navB-1)*100:null;
+  const premA=(mkt&&navA)?(mkt/navA-1)*100:null;
+  LIVE_PREM=premB; NAV_EST=navB;
+
+  $("offNav").textContent=f4(CFG.officialNav);
+  $("offNavDate").textContent=CFG.navDate||"";
+  $("navA").textContent=f4(navA);
+  $("navB").textContent=f4(navB);
+  $("mkt").textContent=f2(mkt);
+  $("fxv").textContent="USD/CNY "+(CFG.fxNow?CFG.fxNow.toFixed(3):"--");
+
+  $("dNdx").textContent=ndxPoint?ndxPoint.toFixed(0):"--";
+  $("dNdxP").textContent="当日 "+pc(ndxChg);
+  $("dAh").textContent=qqqAh!=null?pc(qqqAh):"--";
+  $("dAhP").textContent=qqqClose?"QQQ "+qqqClose.toFixed(2):"";
+  $("dFx").textContent=CFG.fxNow?CFG.fxNow.toFixed(3):"--";
+
+  renderPrem(premA,premB,mkt,navA,navB);
+
+  let tl="净值日 "+(CFG.navDate||"--")+" ｜ 美股 "+(usDate||"--")+" ｜ 滞后 "+(lag==null?"--":lag)+" 场";
+  if(stale) tl+=" ｜ <span class='warn'>⚠ lag≥2，估算可能偏低</span>";
+  tl+=" ｜ 本地 "+new Date().toLocaleTimeString("zh-CN");
+  $("times").innerHTML=tl;
+
+  drawChart(premB); renderStats(premB); renderLedger(); renderRisk(premB);
+}
+
+function renderPrem(pa,pb,mkt,navA,navB){
+  const el=$("prem"), tag=$("tag"), sec=$("second"), note=$("premNote");
+  if(pb==null){ el.textContent="--"; return; }
+  const isPrem=pb>=0, color=isPrem?"var(--up)":"var(--down)";
+  el.textContent=(pb>=0?"+":"")+pb.toFixed(2)+"%"; el.style.color=color;
+  tag.textContent=isPrem?"溢价":"折价"; tag.style.background=isPrem?"rgba(255,82,82,.16)":"rgba(34,197,94,.16)"; tag.style.color=color;
+  sec.innerHTML="常规口径："+((pa>=0?"+":"")+pa.toFixed(2)+"%")+"　（净值 "+f4(navA)+" → "+f4(navB)+"）";
+  let t;
+  if(pb>5) t="极端溢价 → 场内远高于净值，买入即承担约"+pb.toFixed(1)+"%溢价，回归风险大。";
+  else if(pb>1.5) t="明显溢价 → 场内偏贵，追高需谨慎。";
+  else if(pb<-1) t="折价 → 场内低于净值，但 ETF 申赎门槛高，散户难以直接套利。";
+  else t="接近平价。";
+  note.textContent=t+"（场内 "+f2(mkt)+"）";
+}
+
+function renderRisk(pb){
+  const box=$("riskBox"); if(!box) return;
+  if(pb==null||pb<=1.5){ box.style.display="none"; return; }
+  box.style.display="";
+  const toZero=pb;
+  box.innerHTML="<h3>⚠ 溢价风险提示</h3><div class='warnbox'>"+
+    "当前含盘后溢价 <b>+"+pb.toFixed(2)+"%</b>。若溢价完全回归净值（净值不变），场内价需下跌约 <b>"+toZero.toFixed(1)+"%</b>；"+
+    "若回归到历史均值，跌幅另计。"+(pb>5?"<br><b>这属于极端溢价（QDII 额度受限常见），不是套利机会，而是成本。</b>":"")+
+    "</div>";
+}
+
+function drawChart(live){
+  const pts=HIST.map(p=>({v:p[1]})); if(live!=null) pts.push({v:live,live:true});
+  if(pts.length<2){ $("chart").innerHTML=""; return; }
+  const W=700,H=190,pad=24;
+  const vals=pts.map(p=>p.v); let mn=Math.min(...vals), mx=Math.max(...vals);
+  const sp=Math.max(mx-mn,1); mn-=sp*0.12; mx+=sp*0.12;
+  const x=i=>pad+(W-2*pad)*i/(pts.length-1);
+  const y=v=>pad+(H-2*pad)*(1-(v-mn)/(mx-mn));
+  const y0=y(0);
+  let d=""; pts.forEach((p,i)=>{ d+=(i?"L":"M")+x(i).toFixed(1)+" "+y(p.v).toFixed(1)+" "; });
+  const last=pts[pts.length-1];
+  const area=d+"L"+x(pts.length-1).toFixed(1)+" "+y0.toFixed(1)+" L"+x(0).toFixed(1)+" "+y0.toFixed(1)+" Z";
+  $("chart").innerHTML=
+    '<line x1="'+pad+'" y1="'+y0.toFixed(1)+'" x2="'+(W-pad)+'" y2="'+y0.toFixed(1)+'" stroke="#30363d" stroke-dasharray="4 4"/>'+
+    '<path d="'+area+'" fill="rgba(59,130,246,.08)"/>'+
+    '<path d="'+d+'" fill="none" stroke="#3b82f6" stroke-width="1.6"/>'+
+    '<circle cx="'+x(pts.length-1).toFixed(1)+'" cy="'+y(last.v).toFixed(1)+'" r="3.5" fill="'+(last.v>=0?"#ff5252":"#22c55e")+'"/>'+
+    '<text x="'+pad+'" y="14" fill="#8b949e" font-size="11">+'+mx.toFixed(1)+'%</text>'+
+    '<text x="'+pad+'" y="'+(H-6)+'" fill="#8b949e" font-size="11">'+mn.toFixed(1)+'%</text>';
+}
+
+function renderStats(live){
+  if(!HIST.length) return;
+  const vals=HIST.map(p=>p[1]);
+  const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+  const set=(id,v)=>{const e=$(id);e.textContent=(v>=0?"+":"")+v.toFixed(2)+"%";};
+  set("stNow", live!=null?live:vals[vals.length-1]); set("stAvg",avg);
+  set("stMax",Math.max(...vals)); set("stMin",Math.min(...vals));
+}
+
+const LKEY="lof513300_ledger_v1";
+function lLoad(){ try{ return JSON.parse(localStorage.getItem(LKEY)||"[]"); }catch(e){ return []; } }
+function lSave(a){ localStorage.setItem(LKEY, JSON.stringify(a)); }
+function addBatch(){
+  const d=$("bDate").value, p=parseFloat($("bPrice").value), disc=parseFloat($("bDisc").value);
+  if(!d||isNaN(p)||p<=0){ alert("请填写买入日期和买入价"); return; }
+  const a=lLoad(); a.push({id:Date.now(),date:d,price:p,disc:isNaN(disc)?null:disc});
+  lSave(a); $("bPrice").value=""; $("bDisc").value=""; renderLedger();
+}
+function delBatch(id){ if(!confirm("删除这条记录？")) return; lSave(lLoad().filter(x=>x.id!==id)); renderLedger(); }
+function renderLedger(){
+  const box=$("ledgerWrap"); if(!box) return;
+  const a=lLoad();
+  if(!a.length){ box.innerHTML="<div class='small' style='padding:4px 0'>暂无记录。</div>"; return; }
+  const t=new Date(); t.setHours(0,0,0,0);
+  let h="<table><thead><tr><th>买入日</th><th>买入价</th><th>溢价</th><th>持有</th><th>当前净值</th><th>浮动收益</th><th></th></tr></thead><tbody>";
+  a.sort((x,y)=>x.date<y.date?-1:1).forEach(b=>{
+    const d0=new Date(b.date+"T00:00:00");
+    const days=Math.max(0,Math.floor((t-d0)/86400000));
+    let fr="--", cls="";
+    if(NAV_EST!=null){ const r=NAV_EST/b.price-1; fr=(r*100>=0?"+":"")+(r*100).toFixed(2)+"%"; cls=r>=0?"down":"up"; }
+    h+="<tr><td>"+b.date.slice(5)+"</td><td>"+b.price.toFixed(3)+"</td><td>"+(b.disc==null?"--":b.disc.toFixed(1)+"%")+"</td>"+
+       "<td>"+days+"天</td><td>"+f4(NAV_EST)+"</td><td class='"+cls+"'>"+fr+"</td>"+
+       "<td><a href='javascript:void(0)' onclick='delBatch("+b.id+")' style='color:#8b949e'>✕</a></td></tr>";
+  });
+  h+="</tbody></table>";
+  box.innerHTML=h;
+}
+function applyCfg(){ const f=parseFloat($("inFx0").value); if(!isNaN(f)&&f>0) CFG.fxAnchor=f; compute(); }
+
+(async function(){
+  const ok=await loadHistory();
+  await refresh();
+  if(!ok) $("status").textContent+="（历史曲线用实时数据）";
+  setInterval(refresh, 15000);
+})();
+</script>
+</body>
+</html>
